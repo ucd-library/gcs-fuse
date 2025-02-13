@@ -1,6 +1,6 @@
 FROM debian:bullseye
-
 RUN apt-get update && apt-get install -y curl ca-certificates gnupg
+
 
 # RUN export LSB_RELEASE=$(lsb_release -c -s)
 ENV GCSFUSE_REPO=gcsfuse-bullseye
@@ -12,3 +12,5 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
   apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && apt-get update -y && apt-get install -y fuse gcsfuse google-cloud-cli
 
 COPY run.sh /run.sh
+
+CMD ["/run.sh"]
