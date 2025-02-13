@@ -12,3 +12,5 @@ Requires to following environment variables:
 
 Optional:
   - `FUSE_FLAGS` - change the flags passed to the `gcsfuse` command. Default is `--implicit-dirs -o allow_other`.  The `--foreground` flag is always added.
+
+Documentation: https://cloud.google.com/storage/docs/cloud-storage-fuse/overview
