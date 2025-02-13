@@ -19,7 +19,7 @@ if [[ ! -d "$FUSE_DIR" ]]; then
   mkdir -p $FUSE_DIR
 fi
 if [[ -z "$FUSE_FLAGS" ]]; then
-  $FUSE_FLAGS="--implicit-dirs -o allow_other"
+  FUSE_FLAGS="--implicit-dirs -o allow_other"
 fi
 
 echo "Activating service account: $GOOGLE_APPLICATION_CREDENTIALS"
