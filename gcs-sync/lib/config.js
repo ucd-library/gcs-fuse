@@ -18,6 +18,8 @@ const config = {
 
   buckets,
 
+  googleApplicationCredentials : env.GOOGLE_APPLICATION_CREDENTIALS,
+
 }
 
 export default config;

@@ -3,12 +3,14 @@ import exec from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import config from './lib/config.js';
-import e from 'express';
 
 const app = express();
 
 if( !config.buckets ) {
   throw new Error('No BUCKETS environment variable found');
+}
+if( !config.googleApplicationCredentials ) {
+  throw new Error('No GOOGLE_APPLICATION_CREDENTIALS environment variable found');
 }
 for( let bucket in config.buckets ) {
   if( !path.isAbsolute(config.buckets[bucket]) ) {
@@ -50,6 +52,21 @@ async function sync(bucket) {
   });
 }
 
+async function activateServiceAccount() {
+  const cmd = `gcloud auth activate-service-account --key-file=${config.googleApplicationCredentials}`;
+  console.log(`Running: ${cmd}`);
+
+  return new Promise((resolve, reject) => {
+    exec.exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 app.get('/:bucket', async (req, res) => {
   try {
     const result = await sync(req.params.bucket);
@@ -62,8 +79,10 @@ app.get('/:bucket', async (req, res) => {
   }
 });
 
-app.listen(config.port, () => {
+app.listen(config.port, async () => {
   console.log(`Listening on port ${config.port}`);
+
+  await activateServiceAccount();
 
   for( let bucket in config.buckets ) {
     sync(bucket);
