@@ -1,2 +1,3 @@
 corkbuild.Dockerfile
 *cork-build.json
+node_modules
