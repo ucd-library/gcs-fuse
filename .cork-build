@@ -2,8 +2,11 @@
   "registry" : "us-west1-docker.pkg.dev/digital-ucdavis-edu/pub",
 
   "images" : {
+    "gcs-sync" : {
+      "contextPath" : "gcs-sync"
+    },
     "gcs-fuse" : {
-      "contextPath" : "."
+      "contextPath" : "gcs-fuse"
     }
   }
 }

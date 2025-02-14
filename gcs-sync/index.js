@@ -1,7 +1,9 @@
 import express from 'express';
 import exec from 'child_process';
 import path from 'path';
-import config from './config';
+import fs from 'fs';
+import config from './lib/config.js';
+import e from 'express';
 
 const app = express();
 
@@ -17,20 +19,33 @@ for( let bucket in config.buckets ) {
 async function sync(bucket) {
   const path = config.buckets[bucket];
   if (!path) {
-    throw new Error(`No path found for bucket: ${bucket}`);
+    throw new Error(`Bucket registration not found: ${bucket}`);
+  }
+
+  if( !fs.existsSync(path) ) {
+    console.log('Making directory:', path);
+    fs.mkdirSync(path, {recursive: true});
   }
 
   const cmd = `gsutil -m rsync -r -d gs://${bucket} ${path}`;
   console.log(`Running: ${cmd}`);
 
   return new Promise((resolve, reject) => {
-    exec.exec(cmd, (error, stdout, stderr) => {
+    let proc = exec.exec(cmd, (error, stdout, stderr) => {
       if (error) {
         reject(error);
       } else {
-        console.log({cmd, stdout, stderr});
-        resolve({stdout, stderr});
+        resolve();
       }
+    });
+    proc.stdout.on('data', (data) => {
+      console.log(data);
+    });
+    proc.stderr.on('data', (data) => {
+      console.log(data);
+    });
+    proc.on('close', (code) => {
+      console.log(`'${cmd}' exited with code ${code}`);
     });
   });
 }
@@ -40,7 +55,10 @@ app.get('/:bucket', async (req, res) => {
     const result = await sync(req.params.bucket);
     res.json(result);
   } catch (error) {
-    res.status(500).json({error});
+    res.status(500).json({
+      error: error.message,
+      stack: error.stack
+    });
   }
 });
 
